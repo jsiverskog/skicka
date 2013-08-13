@@ -37,12 +37,6 @@ extern "C"
     } skResponseFormat;
     
     /**
-     * Response callback. Arguments are only valid until this function returns.
-     * Deep copy any data that should exist past the call to this function.
-     */
-    typedef void (*skRawResponseCallback)(skRequest* request, skResponse* response);
-    
-    /**
      * Response callback. Arguments are only valid until this function returns. 
      * Deep copy any data that should exist past the call to this function.
      */
@@ -58,7 +52,7 @@ extern "C"
         /** */
         skResponseFormat expectedResponseFormat;
         
-        skRawResponseCallback rawResponseCallback;
+        skResponseCallback rawResponseCallback;
         
         skJSONResponseCallback jsonResponseCallback;
     } skRequestPoolEntry;
@@ -75,7 +69,7 @@ extern "C"
         char* baseURL;
     
         
-        skRawResponseCallback debugResponseCallback;
+        skResponseCallback debugResponseCallback;
 
     } skRESTClient;
 
@@ -117,12 +111,12 @@ extern "C"
     void skRESTClient_cancelAllRequests(skRESTClient* client, int waitUntilCancelled);
     
     /**
-     *
+     * 
      */
     void skRESTClient_waitForAllRequestsToFinish(skRESTClient* client);
     
     /**
-     *
+     * 
      */
     int skRESTClient_getNumActiveRequests(skRESTClient* client);
     

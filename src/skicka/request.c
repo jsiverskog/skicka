@@ -200,6 +200,25 @@ void skRequest_send(skRequest* request, int async)
     }
 }
 
+void skRequest_poll(skRequest* request)
+{
+    if (request->isRunning == 0)
+    {
+        return;
+    }
+    
+    skRequestState state = skRequest_getState(request);
+    
+    if (state != SK_IN_PROGRESS)
+    {
+        request->isRunning = 0;
+        if (request->responseCallback)
+        {
+            request->responseCallback(request, &request->response);
+        }
+    }
+}
+
 void skRequest_cancel(skRequest* request, int waitUntilCanceled)
 {
     mtx_lock(&request->mutex);

@@ -11,6 +11,14 @@
 extern "C"
 {
 #endif /* __cplusplus */
+
+    struct skRequest;
+    
+    /**
+     * Response callback. Arguments are only valid until this function returns.
+     * Deep copy any data that should exist past the call to this function.
+     */
+    typedef void (*skResponseCallback)(struct skRequest* request, skResponse* response);
     
     /**
      *
@@ -64,7 +72,11 @@ extern "C"
         skMutableString requestBody;
         /** */
         void* userData;
+        /** */
+        skResponseCallback responseCallback;
     } skRequest;
+    
+    
     
     /**
      *
@@ -95,6 +107,11 @@ extern "C"
      *
      */
     void skRequest_send(skRequest* request, int async);
+    
+    /**
+     *
+     */
+    void skRequest_poll(skRequest* request);
     
     /**
      *

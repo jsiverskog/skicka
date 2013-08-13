@@ -2,6 +2,12 @@
 #include "testrequest.h"
 #include "request.h"
 
+static void responseCallback(skRequest* request, skResponse* response)
+{
+    int* done = (int*)request->userData;
+    *done = 1;
+}
+
 void testGET()
 {
     skRequest r;
@@ -23,9 +29,13 @@ void testGETAsync()
     
     skRequest_send(&r, 1);
     
-    while (skRequest_getState(&r) == SK_IN_PROGRESS)
+    int done = 0;
+    r.userData = &done;
+    r.responseCallback = responseCallback;
+    
+    while (!done)
     {
-        //wait until the request has finished
+        skRequest_poll(&r);
     }
     
     const skResponse* resp = &r.response;
