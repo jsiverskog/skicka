@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <curl/curl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,9 +11,9 @@ void skMutableString_init(skMutableString* ms)
 
 void skMutableString_deinit(skMutableString* ms)
 {
-    if (ms->data)
+    if (ms->dynamicData)
     {
-        free(ms->data);
+        free(ms->dynamicData);
     }
     
     memset(ms, 0, sizeof(skMutableString));
@@ -26,13 +27,33 @@ void skMutableString_append(skMutableString* ms, const char* toAppend)
     }
     
     const size_t newCharCount = strlen(toAppend) + ms->charCount;
-    ms->data = realloc(ms->data, newCharCount + 1);
-    memcpy(&ms->data[ms->charCount], toAppend, strlen(toAppend));
+    
+    if (newCharCount > SK_MUTABLE_STRING_STATIC_SIZE)
+    {
+        //too big to be static. copy the data
+        if (ms->charCount <= SK_MUTABLE_STRING_STATIC_SIZE)
+        {
+            assert(ms->dynamicData == 0);
+        }
+        
+        ms->dynamicData = realloc(ms->dynamicData, newCharCount + 1);
+        
+        if (ms->charCount <= SK_MUTABLE_STRING_STATIC_SIZE)
+        {
+            memcpy(ms->dynamicData, ms->staticData, ms->charCount);
+            ms->dynamicData[ms->charCount] = '\0';
+            memset(ms->staticData, 0, SK_MUTABLE_STRING_STATIC_SIZE);
+        }
+    }
+    
+    char* targetData = newCharCount > SK_MUTABLE_STRING_STATIC_SIZE ? ms->dynamicData : ms->staticData;
+    
+    memcpy(&targetData[ms->charCount], toAppend, strlen(toAppend));
     ms->charCount = newCharCount;
-    ms->data[ms->charCount] = '\0';
+    targetData[ms->charCount] = '\0';
 }
 
 const char* skMutableString_getString(skMutableString* ms)
 {
-    return ms->data;
+    return ms->dynamicData != 0 ? ms->dynamicData : ms->staticData;
 }

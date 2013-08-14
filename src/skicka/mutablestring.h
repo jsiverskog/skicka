@@ -6,12 +6,13 @@ extern "C"
 {
 #endif /* __cplusplus */
 
+#define SK_MUTABLE_STRING_STATIC_SIZE 255
     
     typedef struct skMutableString
     {
         int charCount;
-        //char staticData[SK_MUTABLE_STRING_STATIC_SIZE]; TODO: use for small strings
-        char* data;
+        char staticData[SK_MUTABLE_STRING_STATIC_SIZE + 1];
+        char* dynamicData;
     } skMutableString;
     
     void skMutableString_init(skMutableString* ms);

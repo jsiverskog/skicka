@@ -30,7 +30,7 @@
 		C1394CFC17BAD3F300BE23C9 /* libskicka_osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DE5DA117B50DD500896D45 /* libskicka_osx.a */; };
 		C15FA4D917B96F4C0010BD0A /* mutablestring.c in Sources */ = {isa = PBXBuildFile; fileRef = C15FA4D717B96F4C0010BD0A /* mutablestring.c */; };
 		C15FA4DA17B96F4C0010BD0A /* mutablestring.h in Headers */ = {isa = PBXBuildFile; fileRef = C15FA4D817B96F4C0010BD0A /* mutablestring.h */; };
-		C17A5D7D17BB82D800D4A2BF /* libcurl.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DE5DD017B50E8100896D45 /* libcurl.4.dylib */; };
+		C17A5D8117BB8B6B00D4A2BF /* testmutablestring.c in Sources */ = {isa = PBXBuildFile; fileRef = C17A5D7F17BB8B6B00D4A2BF /* testmutablestring.c */; };
 		C1DE5DB617B50E4800896D45 /* http_parser.c in Sources */ = {isa = PBXBuildFile; fileRef = C1DE5DA917B50E4800896D45 /* http_parser.c */; };
 		C1DE5DB717B50E4800896D45 /* http_parser.h in Headers */ = {isa = PBXBuildFile; fileRef = C1DE5DAA17B50E4800896D45 /* http_parser.h */; };
 		C1DE5DB817B50E4800896D45 /* tinycthread.c in Sources */ = {isa = PBXBuildFile; fileRef = C1DE5DAC17B50E4800896D45 /* tinycthread.c */; };
@@ -119,6 +119,8 @@
 		C1394CC617BA9CD000BE23C9 /* libskicka_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libskicka_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C15FA4D717B96F4C0010BD0A /* mutablestring.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mutablestring.c; sourceTree = "<group>"; };
 		C15FA4D817B96F4C0010BD0A /* mutablestring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mutablestring.h; sourceTree = "<group>"; };
+		C17A5D7F17BB8B6B00D4A2BF /* testmutablestring.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = testmutablestring.c; sourceTree = "<group>"; };
+		C17A5D8017BB8B6B00D4A2BF /* testmutablestring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testmutablestring.h; sourceTree = "<group>"; };
 		C1DE5DA117B50DD500896D45 /* libskicka_osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libskicka_osx.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1DE5DA917B50E4800896D45 /* http_parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = http_parser.c; sourceTree = "<group>"; };
 		C1DE5DAA17B50E4800896D45 /* http_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http_parser.h; sourceTree = "<group>"; };
@@ -192,6 +194,8 @@
 			children = (
 				C1394CAB17BA9C3000BE23C9 /* testclient.c */,
 				C1394CAC17BA9C3000BE23C9 /* testclient.h */,
+				C17A5D7F17BB8B6B00D4A2BF /* testmutablestring.c */,
+				C17A5D8017BB8B6B00D4A2BF /* testmutablestring.h */,
 				C1394CAD17BA9C3000BE23C9 /* testrequest.c */,
 				C1394CAE17BA9C3000BE23C9 /* testrequest.h */,
 				C1394CBC17BA9C6500BE23C9 /* unittests.c */,
@@ -444,6 +448,7 @@
 				C1394CBD17BA9C6500BE23C9 /* unittests.c in Sources */,
 				C1394CBE17BA9C6900BE23C9 /* testclient.c in Sources */,
 				C1394CBF17BA9C6900BE23C9 /* testrequest.c in Sources */,
+				C17A5D8117BB8B6B00D4A2BF /* testmutablestring.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
