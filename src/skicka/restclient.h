@@ -90,7 +90,7 @@ extern "C"
     skRequest* skRESTClient_getRequestFromPool(skRESTClient* client);
     
     /**
-     *
+     * 
      * @param request A request retreived using \c skRESTClient_getRequestFromPool.
      */
     skError skRESTClient_sendRequestWithJSONResponse(skRESTClient* client,

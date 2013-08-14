@@ -75,9 +75,7 @@ extern "C"
         /** */
         skResponseCallback responseCallback;
     } skRequest;
-    
-    
-    
+        
     /**
      *
      */
