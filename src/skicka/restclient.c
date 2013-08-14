@@ -102,11 +102,12 @@ skRequest* skRESTClient_getRequestFromPool(skRESTClient* client)
     return r;
 }
 
-skError skRESTClient_sendRequestWithJSONResponse(skRESTClient* client,
-                                                 skRequest* request,
-                                                 const char* path,
-                                                 skJSONResponseCallback jsonResponseCallback,
-                                                 int async)
+static skError skRESTClient_sendRequestPrivate(skRESTClient* client,
+                                               skRequest* request,
+                                               const char* path,
+                                               skResponseCallback responseCallback,
+                                               skJSONResponseCallback jsonResponseCallback,
+                                               int async)
 {
     if (!request)
     {
@@ -127,10 +128,10 @@ skError skRESTClient_sendRequestWithJSONResponse(skRESTClient* client,
     {
         return SK_INVALID_PARAMETER;
     }
-
+    
     //construct request URL
     const long pathLength = strlen(path);
-
+    
     int pathStart = 0;
     if (pathLength > 0)
     {
@@ -139,14 +140,22 @@ skError skRESTClient_sendRequestWithJSONResponse(skRESTClient* client,
             pathStart = 1;
         }
     }
-
-    client->requestPool[poolIndex].expectedResponseFormat = SK_FORMAT_JSON;
-    client->requestPool[poolIndex].jsonResponseCallback = jsonResponseCallback;
+    
+    if (responseCallback)
+    {
+        client->requestPool[poolIndex].expectedResponseFormat = SK_FORMAT_RAW;
+        client->requestPool[poolIndex].rawResponseCallback = responseCallback;
+    }
+    else
+    {
+        client->requestPool[poolIndex].expectedResponseFormat = SK_FORMAT_JSON;
+        client->requestPool[poolIndex].jsonResponseCallback = jsonResponseCallback;
+    }
     
     skMutableString url;
     skMutableString_init(&url);
     skMutableString_append(&url, client->baseURL);
-
+    
     if (pathLength > 0)
     {
         skMutableString_append(&url, &path[pathStart]);
@@ -159,7 +168,35 @@ skError skRESTClient_sendRequestWithJSONResponse(skRESTClient* client,
     skRequest_send(request, async);
     
     return SK_NO_ERROR;
-    
+}
+
+
+skError skRESTClient_sendRequestWithJSONResponse(skRESTClient* client,
+                                                 skRequest* request,
+                                                 const char* path,
+                                                 skJSONResponseCallback jsonResponseCallback,
+                                                 int async)
+{
+    return skRESTClient_sendRequestPrivate(client,
+                                           request,
+                                           path,
+                                           NULL,
+                                           jsonResponseCallback,
+                                           async);
+}
+
+skError skRESTClient_sendRequest(skRESTClient* client,
+                                 skRequest* request,
+                                 const char* path,
+                                 skResponseCallback responseCallback,
+                                 int async)
+{
+    return skRESTClient_sendRequestPrivate(client,
+                                           request,
+                                           path,
+                                           responseCallback,
+                                           NULL,
+                                           async);
 }
 
 void skRESTClient_poll(skRESTClient* client)

@@ -1,13 +1,16 @@
 #ifndef SK_RESPONSE_H
 #define SK_RESPONSE_H
 
+
+/*! \file */
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif /* __cplusplus */
 
     /**
-     *
+     * A response to an HTTP request.
      */
     typedef struct skResponse
     {

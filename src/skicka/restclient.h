@@ -8,6 +8,8 @@
 #include "../extern/http_parser/http_parser.h"
 #include "../extern/jansson/jansson.h"
 
+/*! \file */
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -51,24 +53,22 @@ extern "C"
         struct skRequest request;
         /** */
         skResponseFormat expectedResponseFormat;
-        
+        /** */
         skResponseCallback rawResponseCallback;
-        
+        /** */
         skJSONResponseCallback jsonResponseCallback;
     } skRequestPoolEntry;
     
     /**
-     * 
+     * Represents a client interacting with a REST service.
      */
     typedef struct skRESTClient
     {
         /** A pool of reusable requests. */
         skRequestPoolEntry requestPool[SK_MAX_NUM_SIMULTANEOUS_REQUESTS];
-
         /** The base URL, always with a trailing '/'.*/
         char* baseURL;
-    
-        
+        /** */
         skResponseCallback debugResponseCallback;
 
     } skRESTClient;
@@ -85,7 +85,11 @@ extern "C"
     void skRESTClient_deinit(skRESTClient* client);
     
     /**
-     * 
+     * Returns an initialized \c skRequest instance from 
+     * a given client's request pool.
+     * @param client The REST client.
+     * @return An initialized request, or NULL there are no 
+     * inactive request in the pool.
      */
     skRequest* skRESTClient_getRequestFromPool(skRESTClient* client);
     
@@ -100,13 +104,25 @@ extern "C"
                                                      int async);
     
     /**
-     * 
+     *
+     * @param request A request retreived using \c skRESTClient_getRequestFromPool.
+     */
+    skError skRESTClient_sendRequest(skRESTClient* client,
+                                     skRequest* request,
+                                     const char* path,
+                                     skResponseCallback responseCallback,
+                                     int async);
+    
+    /**
+     *
      * @param client
      */
     void skRESTClient_poll(skRESTClient* client);
     
     /**
-     *
+     * Cancels all currently requests.
+     * @param client
+     * @param waitUntilCancelled 
      */
     void skRESTClient_cancelAllRequests(skRESTClient* client, int waitUntilCancelled);
     
