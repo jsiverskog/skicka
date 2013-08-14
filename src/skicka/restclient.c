@@ -76,6 +76,8 @@ void skRESTClient_deinit(skRESTClient* client)
     {
         free(client->baseURL);
     }
+    
+    memset(client, 0, sizeof(skRESTClient));
 }
 
 skRequest* skRESTClient_getRequestFromPool(skRESTClient* client)
