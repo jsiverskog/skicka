@@ -219,6 +219,11 @@ void skRequest_send(skRequest* request, int async)
     else
     {
         requestThreadEntryPoint(request);
+        request->isRunning = 0;
+        if (request->responseCallback)
+        {
+            request->responseCallback(request, &request->response);
+        }
     }
 }
 

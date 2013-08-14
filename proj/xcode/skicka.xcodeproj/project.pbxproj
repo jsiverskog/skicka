@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C134FC2A17BAD722009B2F13 /* libcurl.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DE5DD017B50E8100896D45 /* libcurl.4.dylib */; };
 		C1394CBD17BA9C6500BE23C9 /* unittests.c in Sources */ = {isa = PBXBuildFile; fileRef = C1394CBC17BA9C6500BE23C9 /* unittests.c */; };
 		C1394CBE17BA9C6900BE23C9 /* testclient.c in Sources */ = {isa = PBXBuildFile; fileRef = C1394CAB17BA9C3000BE23C9 /* testclient.c */; };
 		C1394CBF17BA9C6900BE23C9 /* testrequest.c in Sources */ = {isa = PBXBuildFile; fileRef = C1394CAD17BA9C3000BE23C9 /* testrequest.c */; };
@@ -155,8 +156,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C134FC2A17BAD722009B2F13 /* libcurl.4.dylib in Frameworks */,
 				C1394CFC17BAD3F300BE23C9 /* libskicka_osx.a in Frameworks */,
-				C17A5D7D17BB82D800D4A2BF /* libcurl.4.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -692,7 +693,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -727,7 +728,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
