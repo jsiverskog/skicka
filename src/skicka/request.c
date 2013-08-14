@@ -122,6 +122,11 @@ void skRequest_deinit(skRequest* request)
         skRequest_cancel(request, 1);
     }
     
+    if (request->headerFieldList)
+    {
+        curl_slist_free_all(request->headerFieldList);
+    }
+    
     curl_easy_cleanup(request->curl);
     skResponse_deinit(&request->response);
     skMutableString_deinit(&request->requestBody);
@@ -151,7 +156,19 @@ void skRequest_appendToBody(skRequest* request, const char* string, int urlEncod
     {
         skMutableString_append(&request->requestBody, string);
     }
+}
+
+void skRequest_addHeaderField(skRequest* request, const char* name, const char* value)
+{
+    skMutableString s;
+    skMutableString_init(&s);
+    skMutableString_append(&s, name);
+    skMutableString_append(&s, ": ");
+    skMutableString_append(&s, value);
     
+    request->headerFieldList = curl_slist_append(request->headerFieldList, skMutableString_getString(&s));
+    
+    skMutableString_deinit(&s);
 }
 
 void skRequest_send(skRequest* request, int async)
@@ -164,6 +181,11 @@ void skRequest_send(skRequest* request, int async)
     request->isRunning = 1;
     
     request->state = SK_IN_PROGRESS;
+    
+    if (request->headerFieldList)
+    {
+        curl_easy_setopt(request->curl, CURLOPT_HTTPHEADER, request->headerFieldList);
+    }
     
     curl_easy_setopt(request->curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(request->curl, CURLOPT_WRITEHEADER, request);

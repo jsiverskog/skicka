@@ -2,8 +2,8 @@
 #define SK_REQUEST_H
 
 #include <curl/curl.h>
-#include "tinycthread.h"
-#include "http_parser.h"
+#include "../extern/tinycthread/tinycthread.h"
+#include "../extern/http_parser/http_parser.h"
 #include "response.h"
 #include "mutablestring.h"
 
@@ -44,7 +44,7 @@ extern "C"
     } skHTTPMethod;
     
     /**
-     * 
+     * An HTTP request.
      */
     typedef struct skRequest
     {
@@ -61,6 +61,8 @@ extern "C"
         /** */
         CURL *curl;
         /** */
+        struct curl_slist* headerFieldList;
+        /** */
         thrd_t thread;
         /** */
         http_parser_settings httpParserSettings;
@@ -75,8 +77,6 @@ extern "C"
         /** */
         skResponseCallback responseCallback;
     } skRequest;
-    
-    
     
     /**
      *
@@ -102,6 +102,11 @@ extern "C"
      *
      */
     void skRequest_appendToBody(skRequest* request, const char* string, int urlEncode);
+    
+    /**
+     *
+     */
+    void skRequest_addHeaderField(skRequest* request, const char* name, const char* value);
     
     /**
      *

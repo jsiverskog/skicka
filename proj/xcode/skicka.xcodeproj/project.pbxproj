@@ -27,9 +27,9 @@
 		C1394CFA17BA9CF500BE23C9 /* response.c in Sources */ = {isa = PBXBuildFile; fileRef = C1DE5DD217B5114800896D45 /* response.c */; };
 		C1394CFB17BA9CF500BE23C9 /* request.c in Sources */ = {isa = PBXBuildFile; fileRef = C1DE5DB117B50E4800896D45 /* request.c */; };
 		C1394CFC17BAD3F300BE23C9 /* libskicka_osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DE5DA117B50DD500896D45 /* libskicka_osx.a */; };
-		C1394CFE17BAD40400BE23C9 /* libcurl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C1394CFD17BAD40400BE23C9 /* libcurl.dylib */; };
 		C15FA4D917B96F4C0010BD0A /* mutablestring.c in Sources */ = {isa = PBXBuildFile; fileRef = C15FA4D717B96F4C0010BD0A /* mutablestring.c */; };
 		C15FA4DA17B96F4C0010BD0A /* mutablestring.h in Headers */ = {isa = PBXBuildFile; fileRef = C15FA4D817B96F4C0010BD0A /* mutablestring.h */; };
+		C17A5D7D17BB82D800D4A2BF /* libcurl.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DE5DD017B50E8100896D45 /* libcurl.4.dylib */; };
 		C1DE5DB617B50E4800896D45 /* http_parser.c in Sources */ = {isa = PBXBuildFile; fileRef = C1DE5DA917B50E4800896D45 /* http_parser.c */; };
 		C1DE5DB717B50E4800896D45 /* http_parser.h in Headers */ = {isa = PBXBuildFile; fileRef = C1DE5DAA17B50E4800896D45 /* http_parser.h */; };
 		C1DE5DB817B50E4800896D45 /* tinycthread.c in Sources */ = {isa = PBXBuildFile; fileRef = C1DE5DAC17B50E4800896D45 /* tinycthread.c */; };
@@ -116,7 +116,6 @@
 		C1394CB317BA9C5800BE23C9 /* unittests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = unittests; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1394CBC17BA9C6500BE23C9 /* unittests.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unittests.c; sourceTree = "<group>"; };
 		C1394CC617BA9CD000BE23C9 /* libskicka_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libskicka_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		C1394CFD17BAD40400BE23C9 /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = usr/lib/libcurl.dylib; sourceTree = SDKROOT; };
 		C15FA4D717B96F4C0010BD0A /* mutablestring.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mutablestring.c; sourceTree = "<group>"; };
 		C15FA4D817B96F4C0010BD0A /* mutablestring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mutablestring.h; sourceTree = "<group>"; };
 		C1DE5DA117B50DD500896D45 /* libskicka_osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libskicka_osx.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -156,8 +155,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C1394CFE17BAD40400BE23C9 /* libcurl.dylib in Frameworks */,
 				C1394CFC17BAD3F300BE23C9 /* libskicka_osx.a in Frameworks */,
+				C17A5D7D17BB82D800D4A2BF /* libcurl.4.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,7 +203,6 @@
 			children = (
 				C1DE5DA617B50E4800896D45 /* src */,
 				C1DE5DA217B50DD500896D45 /* Products */,
-				C1394CFD17BAD40400BE23C9 /* libcurl.dylib */,
 				C1DE5DD017B50E8100896D45 /* libcurl.4.dylib */,
 			);
 			sourceTree = "<group>";
@@ -522,6 +520,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -561,6 +560,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -822,6 +822,7 @@
 				C1394CBB17BA9C5800BE23C9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C1394CE617BA9CD100BE23C9 /* Build configuration list for PBXNativeTarget "skicka_ios" */ = {
 			isa = XCConfigurationList;
@@ -830,6 +831,7 @@
 				C1394CE817BA9CD100BE23C9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C18CC0B717B50D67005149E4 /* Build configuration list for PBXProject "skicka" */ = {
 			isa = XCConfigurationList;

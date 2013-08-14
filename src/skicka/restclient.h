@@ -2,11 +2,11 @@
 #define SK_CLIENT_H
 
 #include <curl/curl.h>
-#include "tinycthread.h"
+#include "../extern/tinycthread/tinycthread.h"
 #include "response.h"
 #include "request.h"
-#include "http_parser.h"
-#include "jansson.h"
+#include "../extern/http_parser/http_parser.h"
+#include "../extern/jansson/jansson.h"
 
 #ifdef __cplusplus
 extern "C"
