@@ -13,7 +13,7 @@ static void testMutableStringSingleAppend()
     skMutableString s;
     
     const int numCases = 6;
-    const int lengths[numCases] =
+    const int lengths[6] =
     {
         SK_MUTABLE_STRING_STATIC_SIZE - 2,
         SK_MUTABLE_STRING_STATIC_SIZE - 1,
@@ -75,7 +75,7 @@ static void testMutableStringMutipleAppend()
     refString1[len] = '\0';
     
     const int numCases = 6;
-    const int chunkSizes[numCases] =
+    const int chunkSizes[6] =
     {
         1,
         2,
