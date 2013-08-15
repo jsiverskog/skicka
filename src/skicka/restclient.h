@@ -1,7 +1,6 @@
 #ifndef SK_CLIENT_H
 #define SK_CLIENT_H
 
-#include <curl/curl.h>
 #include "../extern/tinycthread/tinycthread.h"
 #include "response.h"
 #include "request.h"

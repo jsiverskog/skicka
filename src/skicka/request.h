@@ -1,7 +1,7 @@
 #ifndef SK_REQUEST_H
 #define SK_REQUEST_H
 
-#include <curl/curl.h>
+
 #include "../extern/tinycthread/tinycthread.h"
 #include "../extern/http_parser/http_parser.h"
 #include "response.h"
@@ -14,6 +14,8 @@ extern "C"
 {
 #endif /* __cplusplus */
 
+    typedef void CURL;
+    struct curl_slist;
     struct skRequest;
     
     /**
