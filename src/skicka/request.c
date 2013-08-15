@@ -50,6 +50,7 @@ static int on_message_begin(http_parser* p)
 static int on_message_complete(http_parser* p)
 {
     skRequest* c = (skRequest*)p->data;
+    c->response.bodySize = c->response.size - c->response.bodyStart;
     //printf("-----------ON MESSAGE COMPLETE---------\n");
     return 0;
 }
@@ -91,6 +92,9 @@ static int requestThreadEntryPoint(void *userPtr)
     
     if (state == SK_SUCCEEDED)
     {
+        //null terminate the received bytes
+        request->response.bytes = realloc(request->response.bytes, request->response.size + 1);
+        request->response.bytes[request->response.size] = '\0';
         request->response.body = &request->response.bytes[request->response.bodyStart];
     }
     

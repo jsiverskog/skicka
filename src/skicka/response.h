@@ -17,6 +17,7 @@ extern "C"
         int httpStatusCode;
         int bodyStart;
         int size;
+        int bodySize;
         char* bytes;
         char* body;
     } skResponse;

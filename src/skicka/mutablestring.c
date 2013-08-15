@@ -21,12 +21,17 @@ void skMutableString_deinit(skMutableString* ms)
 
 void skMutableString_append(skMutableString* ms, const char* toAppend)
 {
+    skMutableString_appendBytes(ms, toAppend, strlen(toAppend));
+}
+
+void skMutableString_appendBytes(skMutableString* ms, const char* toAppend, int numBytes)
+{
     if (!toAppend)
     {
         return;
     }
     
-    const size_t newCharCount = strlen(toAppend) + ms->charCount;
+    const size_t newCharCount = numBytes + ms->charCount;
     
     if (newCharCount > SK_MUTABLE_STRING_STATIC_SIZE)
     {
@@ -48,7 +53,7 @@ void skMutableString_append(skMutableString* ms, const char* toAppend)
     
     char* targetData = newCharCount > SK_MUTABLE_STRING_STATIC_SIZE ? ms->dynamicData : ms->staticData;
     
-    memcpy(&targetData[ms->charCount], toAppend, strlen(toAppend));
+    memcpy(&targetData[ms->charCount], toAppend, numBytes);
     ms->charCount = newCharCount;
     targetData[ms->charCount] = '\0';
 }
