@@ -200,7 +200,7 @@ void skRequest_send(skRequest* request, int async)
     
     const char* requestBody = skMutableString_getString(&request->requestBody);
     
-    if (requestBody)
+    if (strlen(requestBody))
     {
         curl_easy_setopt(request->curl, CURLOPT_POST, 1);
         curl_easy_setopt(request->curl, CURLOPT_POSTFIELDS, requestBody);
