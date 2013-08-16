@@ -22,7 +22,8 @@ int main(int argc, const char * argv[])
     sput_run_test(testPOST);
     
     sput_enter_suite("REST Client tests");
-    sput_run_test(testClient);
+    sput_run_test(testClientRequestCount);
+    sput_run_test(testClientRequestPoolSize);
     
     sput_finish_testing();
     

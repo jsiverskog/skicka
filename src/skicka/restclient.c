@@ -273,7 +273,10 @@ int skRESTClient_getNumActiveRequests(skRESTClient* client)
             continue;
         }
         
-        numActive++;
+        if (r->isRunning)
+        {
+            numActive++;
+        }
     }
     
     return numActive;
