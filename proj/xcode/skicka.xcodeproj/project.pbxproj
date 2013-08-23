@@ -117,6 +117,7 @@
 		C15FA4D717B96F4C0010BD0A /* mutablestring.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mutablestring.c; sourceTree = "<group>"; };
 		C15FA4D817B96F4C0010BD0A /* mutablestring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mutablestring.h; sourceTree = "<group>"; };
 		C17A5D7F17BB8B6B00D4A2BF /* testmutablestring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testmutablestring.h; sourceTree = "<group>"; };
+		C1906E4417C756E000EC3CD4 /* errorcodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = errorcodes.h; sourceTree = "<group>"; };
 		C1DE5DA117B50DD500896D45 /* libskicka_osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libskicka_osx.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1DE5DA917B50E4800896D45 /* http_parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = http_parser.c; sourceTree = "<group>"; };
 		C1DE5DAA17B50E4800896D45 /* http_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http_parser.h; sourceTree = "<group>"; };
@@ -259,6 +260,7 @@
 		C1DE5DAE17B50E4800896D45 /* skicka */ = {
 			isa = PBXGroup;
 			children = (
+				C1906E4417C756E000EC3CD4 /* errorcodes.h */,
 				C1DE5DAF17B50E4800896D45 /* restclient.c */,
 				C1DE5DB017B50E4800896D45 /* restclient.h */,
 				C15FA4D717B96F4C0010BD0A /* mutablestring.c */,

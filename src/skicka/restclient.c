@@ -111,6 +111,7 @@ static skError skRESTClient_sendRequestPrivate(skRESTClient* client,
                                                const char* path,
                                                skResponseCallback responseCallback,
                                                skJSONResponseCallback jsonResponseCallback,
+                                               skErrorCallback errorCallback,
                                                int async)
 {
     if (!request)
@@ -179,6 +180,7 @@ skError skRESTClient_sendRequestWithJSONResponse(skRESTClient* client,
                                                  skRequest* request,
                                                  const char* path,
                                                  skJSONResponseCallback jsonResponseCallback,
+                                                 skErrorCallback errorCallback,
                                                  int async)
 {
     return skRESTClient_sendRequestPrivate(client,
@@ -186,6 +188,7 @@ skError skRESTClient_sendRequestWithJSONResponse(skRESTClient* client,
                                            path,
                                            NULL,
                                            jsonResponseCallback,
+                                           errorCallback,
                                            async);
 }
 
@@ -193,6 +196,7 @@ skError skRESTClient_sendRequest(skRESTClient* client,
                                  skRequest* request,
                                  const char* path,
                                  skResponseCallback responseCallback,
+                                 skErrorCallback errorCallback,
                                  int async)
 {
     return skRESTClient_sendRequestPrivate(client,
@@ -200,6 +204,7 @@ skError skRESTClient_sendRequest(skRESTClient* client,
                                            path,
                                            responseCallback,
                                            NULL,
+                                           errorCallback,
                                            async);
 }
 

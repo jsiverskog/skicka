@@ -2,10 +2,12 @@
 #define SK_CLIENT_H
 
 #include "../extern/tinycthread/tinycthread.h"
-#include "response.h"
-#include "request.h"
 #include "../extern/http_parser/http_parser.h"
 #include "../extern/jansson/jansson.h"
+
+#include "errorcodes.h"
+#include "response.h"
+#include "request.h"
 
 /*! \file */
 
@@ -15,18 +17,6 @@ extern "C"
 #endif /* __cplusplus */
     
 #define SK_MAX_NUM_SIMULTANEOUS_REQUESTS 5
-    
-    /**
-     * 
-     */
-    typedef enum skError
-    {
-        SK_NO_ERROR = 0,
-        SK_COULD_NO_CONNECT_TO_SERVER,
-        SK_REQUEST_IS_IN_PROGRESS,
-        SK_UNEXPECTED_ERROR,
-        SK_INVALID_PARAMETER
-    } skError;
     
     /**
      *
@@ -44,17 +34,17 @@ extern "C"
     typedef void (*skJSONResponseCallback)(skRequest* request, json_t* response);
     
     /**
-     *
+     * An entry in a pool of reusable requests.
      */
     typedef struct skRequestPoolEntry
     {
-        /** */
+        /** The request. */
         struct skRequest request;
-        /** */
+        /** The expected response format */
         skResponseFormat expectedResponseFormat;
-        /** */
+        /** Gets invoked if the request succeeds and \c skResponseFormat is \c SK_FORMAT_RAW. */
         skResponseCallback rawResponseCallback;
-        /** */
+        /** Gets invoked if the request succeeds and \c skResponseFormat is \c SK_FORMAT_JSON. */
         skJSONResponseCallback jsonResponseCallback;
     } skRequestPoolEntry;
     
@@ -100,6 +90,7 @@ extern "C"
                                                      skRequest* request,
                                                      const char* path,
                                                      skJSONResponseCallback jsonResponseCallback,
+                                                     skErrorCallback errorCallback,
                                                      int async);
     
     /**
@@ -110,6 +101,7 @@ extern "C"
                                      skRequest* request,
                                      const char* path,
                                      skResponseCallback responseCallback,
+                                     skErrorCallback errorCallback,
                                      int async);
     
     /**

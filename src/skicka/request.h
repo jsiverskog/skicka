@@ -6,6 +6,7 @@
 #include "../extern/http_parser/http_parser.h"
 #include "response.h"
 #include "mutablestring.h"
+#include "errorcodes.h"
 
 /*! \file */
 
@@ -25,6 +26,11 @@ extern "C"
      * @param respose The response.
      */
     typedef void (*skResponseCallback)(struct skRequest* request, skResponse* response);
+    
+    /**
+     *
+     */
+    typedef void (*skErrorCallback)(struct skRequest* request, skError errorCode);
     
     /**
      * Valid HTTP request states.
@@ -82,6 +88,10 @@ extern "C"
         void* userData;
         /** */
         skResponseCallback responseCallback;
+        /** */
+        skError errorCode;
+        /** */
+        skErrorCallback errorCallback;
     } skRequest;
         
     /**
@@ -160,6 +170,11 @@ extern "C"
      *
      */
     skRequestState skRequest_getState(skRequest* request);
+    
+    /**
+     *
+     */
+    int skRequest_isRunning(skRequest* request);
     
 #ifdef __cplusplus
 }

@@ -12,9 +12,9 @@ static void testClientRequestCount()
     for (int i = 0; i < 5; i++)
     {
         skRequest* r = skRESTClient_getRequestFromPool(&c);
-        skRESTClient_sendRequest(&c, r, "/", NULL, 1);
+        skRESTClient_sendRequest(&c, r, "/", NULL, NULL, 1);
         const int numActiveRequests = skRESTClient_getNumActiveRequests(&c);
-        sput_fail_unless(skRESTClient_getNumActiveRequests(&c) == i + 1, "Active request count check");
+        sput_fail_unless(numActiveRequests == i + 1, "Active request count check");
     }
     
     skRESTClient_cancelAllRequests(&c, 1);
@@ -31,10 +31,11 @@ static void testClientRequestPoolSize()
     do
     {
         r = skRESTClient_getRequestFromPool(&c);
-        skRESTClient_sendRequest(&c, r, "/", NULL, 1);
+        skRESTClient_sendRequest(&c, r, "/", NULL, NULL, 1);
     }
     while (r != NULL);
     
+    skRESTClient_waitForAllRequestsToFinish(&c);
     
     skRESTClient_deinit(&c);
 }

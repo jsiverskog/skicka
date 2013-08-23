@@ -16,10 +16,14 @@ int main(int argc, const char * argv[])
     sput_run_test(testMutableStringSingleAppend);
     sput_run_test(testMutableStringMutipleAppend);
     
-    sput_enter_suite("Request tests");
-    sput_run_test(testGET);
-    sput_run_test(testGETAsync);
-    sput_run_test(testPOST);
+    sput_enter_suite("Synchronous request tests");
+    sput_run_test(testSuccessfulGET);
+    sput_run_test(testFailedGET);
+    
+    sput_enter_suite("Asynchronous request tests");
+    sput_run_test(testSuccessfulGETAsync);
+    sput_run_test(testCancelledGETAsync);
+    sput_run_test(testFailedGETAsync);
     
     sput_enter_suite("REST Client tests");
     sput_run_test(testClientRequestCount);

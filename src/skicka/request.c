@@ -64,9 +64,14 @@ static int on_headers_complete(http_parser* p)
     return 0;
 }
 
+static int threadCount = 0;
+
 static int requestThreadEntryPoint(void *userPtr)
 {
+    threadCount++;
+    printf("requestThreadEntryPoint, thread count %d\n", threadCount);
     skRequest* request = (skRequest*)userPtr;
+    assert(request->isRunning);
     
     CURLcode res = curl_easy_perform(request->curl);
     
@@ -80,13 +85,14 @@ static int requestThreadEntryPoint(void *userPtr)
     
     skRequestState state = SK_SUCCEEDED;
     
-    
     if (request->shouldCancel)
     {
+        request->errorCode = SK_REQUEST_CANCELLED;
         state = SK_CANCELLED;
     }
     else if (res != CURLE_OK)
     {
+        request->errorCode = SK_COULD_NOT_CONNECT_TO_SERVER;
         state = SK_FAILED;
     }
     
@@ -102,6 +108,8 @@ static int requestThreadEntryPoint(void *userPtr)
     request->state = state;
     mtx_unlock(&request->mutex);
     
+    assert(request->isRunning);
+    threadCount--;
     return 0;
 }
 
@@ -226,9 +234,20 @@ void skRequest_send(skRequest* request, int async)
     {
         requestThreadEntryPoint(request);
         request->isRunning = 0;
-        if (request->responseCallback)
+        
+        if (request->state == SK_SUCCEEDED)
         {
-            request->responseCallback(request, &request->response);
+            if (request->responseCallback)
+            {
+                request->responseCallback(request, &request->response);
+            }
+        }
+        else if (request->errorCode != SK_NO_ERROR)
+        {
+            if (request->errorCallback)
+            {
+                request->errorCallback(request, request->errorCode);
+            }
         }
     }
 }
@@ -237,17 +256,37 @@ void skRequest_poll(skRequest* request)
 {
     if (request->isRunning == 0)
     {
+        /*The request is not active. Nothing further.*/
         return;
     }
     
     skRequestState state = skRequest_getState(request);
     
-    if (state != SK_IN_PROGRESS)
+    if (state == SK_IN_PROGRESS)
     {
+        /*Waiting for a state change.*/
+    }
+    else
+    {
+        int joinRes = 0;
+        thrd_join(request->thread, &joinRes);
+        
+        /* The state changed from SK_IN_PROGRESS. */
         request->isRunning = 0;
-        if (request->responseCallback)
+        
+        if (request->errorCode == SK_NO_ERROR)
         {
-            request->responseCallback(request, &request->response);
+            if (request->responseCallback)
+            {
+                request->responseCallback(request, &request->response);
+            }
+        }
+        else
+        {
+            if (request->errorCallback)
+            {
+                request->errorCallback(request, request->errorCode);
+            }
         }
     }
 }
@@ -277,6 +316,8 @@ void skRequest_waitUntilDone(skRequest* request)
     {
         assert(0 && "thread join error"); //TODO: handle this error
     }
+    
+    skRequest_poll(request);
 }
 
 skRequestState skRequest_getState(skRequest* request)
@@ -288,3 +329,7 @@ skRequestState skRequest_getState(skRequest* request)
     return state;
 }
 
+int skRequest_isRunning(skRequest* request)
+{
+    return request->isRunning;
+}
