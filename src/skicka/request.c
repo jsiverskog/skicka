@@ -64,12 +64,13 @@ static int on_headers_complete(http_parser* p)
     return 0;
 }
 
-static int threadCount = 0;
+static int debugThreadCount = 0;
 
 static int requestThreadEntryPoint(void *userPtr)
 {
-    threadCount++;
-    printf("requestThreadEntryPoint, thread count %d\n", threadCount);
+    debugThreadCount++;
+    //printf("requestThreadEntryPoint, thread count %d\n", debugThreadCount);
+    
     skRequest* request = (skRequest*)userPtr;
     assert(request->isRunning);
     
@@ -109,7 +110,7 @@ static int requestThreadEntryPoint(void *userPtr)
     mtx_unlock(&request->mutex);
     
     assert(request->isRunning);
-    threadCount--;
+    debugThreadCount--;
     return 0;
 }
 
