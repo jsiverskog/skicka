@@ -14,7 +14,7 @@ static void errorCallback(skRequest* request, skError error)
 {
     sput_fail_unless(error != SK_NO_ERROR, "Error callback error code should not be SK_NO_ERROR");
     
-    int* flags = (int*)request->userData;
+    int* flags = (int*)request->userData[0];
     *flags |= ERROR_CALLBACK_CALLED;
     
     if (error == SK_REQUEST_CANCELLED)
@@ -29,7 +29,7 @@ static void errorCallback(skRequest* request, skError error)
 
 static void responseCallback(skRequest* request, skResponse* response)
 {
-    int* flags = (int*)request->userData;
+    int* flags = (int*)request->userData[0];
     *flags |= RESPONSE_CALLBACK_CALLED;
 }
 
@@ -40,7 +40,7 @@ static void testSuccessfulGET()
     skRequest_setURL(&r, "http://www.example.com");
     
     int flags = 0;
-    r.userData = &flags;
+    r.userData[0] = &flags;
     r.responseCallback = responseCallback;
     r.errorCallback = errorCallback;
     
@@ -63,7 +63,7 @@ static void testFailedGET()
     skRequest_setURL(&r, "http://www.example.lol");
     
     int flags = 0;
-    r.userData = &flags;
+    r.userData[0] = &flags;
     r.responseCallback = responseCallback;
     r.errorCallback = errorCallback;
     
@@ -90,7 +90,7 @@ static void testFailedGETAsync()
         skRequest_setURL(&r, "http://www.example.lol");
         
         int flags = 0;
-        r.userData = &flags;
+        r.userData[0] = &flags;
         r.responseCallback = responseCallback;
         r.errorCallback = errorCallback;
         
@@ -120,7 +120,7 @@ static void testCancelledGETAsync()
         skRequest_setURL(&r, "http://www.example.com");
         
         int flags = 0;
-        r.userData = &flags;
+        r.userData[0] = &flags;
         r.responseCallback = responseCallback;
         r.errorCallback = errorCallback;
         
@@ -152,7 +152,7 @@ static void testSuccessfulGETAsync()
         skRequest_setURL(&r, "http://www.example.com");
         
         int flags = 0;
-        r.userData = &flags;
+        r.userData[0] = &flags;
         r.responseCallback = responseCallback;
         r.errorCallback = errorCallback;
         
@@ -181,7 +181,7 @@ static void testSuccessfulGETAsync()
         skRequest_setURL(&r, "http://www.example.com");
         
         int flags = 0;
-        r.userData = &flags;
+        r.userData[0] = &flags;
         r.responseCallback = responseCallback;
         
         skRequest_send(&r, 1);
