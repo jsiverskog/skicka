@@ -111,7 +111,7 @@ extern "C"
     void skRESTClient_poll(skRESTClient* client);
     
     /**
-     * Cancels all currently requests.
+     * Cancels all currently running requests.
      * @param client
      * @param waitUntilCancelled 
      */

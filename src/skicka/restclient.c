@@ -33,6 +33,10 @@ static void onRequestFinished(skRESTClient* client, skRequestPoolEntry* rpe)
             rpe->rawResponseCallback(r, &r->response);
         }
     }
+    else if (r->errorCallback)
+    {
+        r->errorCallback(r, r->errorCode);
+    }
     
     skRequest_deinit(r);
 }
@@ -169,6 +173,8 @@ static skError skRESTClient_sendRequestPrivate(skRESTClient* client,
     skRequest_setURL(request, skMutableString_getString(&url));
     
     skMutableString_deinit(&url);
+    
+    request->errorCallback = errorCallback;
     
     skRequest_send(request, async);
     

@@ -15,6 +15,8 @@ extern "C"
 {
 #endif /* __cplusplus */
 
+#define SK_REQUEST_NUM_USER_DATA_ENTRIES 4
+    
     typedef void CURL;
     struct curl_slist;
     struct skRequest;
@@ -85,7 +87,7 @@ extern "C"
         /** */
         skMutableString requestBody;
         /** */
-        void* userData;
+        void* userData[SK_REQUEST_NUM_USER_DATA_ENTRIES];
         /** */
         skResponseCallback responseCallback;
         /** */

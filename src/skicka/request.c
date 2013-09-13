@@ -214,7 +214,8 @@ void skRequest_send(skRequest* request, int async)
         curl_easy_setopt(request->curl, CURLOPT_POST, 1);
         curl_easy_setopt(request->curl, CURLOPT_POSTFIELDS, requestBody);
     }
-    else if (request->method == SK_HTTP_DELETE)
+    
+    if (request->method == SK_HTTP_DELETE)
     {
         curl_easy_setopt(request->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
     }
