@@ -63,6 +63,8 @@ extern "C"
     typedef struct skRequest
     {
         /** */
+        int log;
+        /** */
         skHTTPMethod method;
         /** */
         int isRunning;

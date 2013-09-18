@@ -7,7 +7,19 @@
 #include "restclient.h"
 #include "request.h"
 
-static size_t readCallback(void *ptr, size_t size, size_t nmemb, void *userp)
+static size_t requestBytesSentCallback(void *ptr, size_t size, size_t nmemb, void *userp)
+{
+    skRequest* c = (skRequest*)userp;
+    
+    if (c->log)
+    {
+        printf("%s", ptr);
+    }
+    
+    return size * nmemb;
+}
+
+static size_t responseBytesReceivedCallback(void *ptr, size_t size, size_t nmemb, void *userp)
 {
     skRequest* c = (skRequest*)userp;
     
@@ -20,15 +32,16 @@ static size_t readCallback(void *ptr, size_t size, size_t nmemb, void *userp)
         return CURL_READFUNC_ABORT;
     }
     
-    //printf("%s", ptr);
-    
     const size_t numBytes = size * nmemb;
     
     c->response.bytes = realloc(c->response.bytes, c->response.size + numBytes);
     memcpy(&c->response.bytes[c->response.size], ptr, numBytes);
     c->response.size += numBytes;
     
-    //printf("%s\n", ptr);
+    if (c->log)
+    {
+        printf("%s", ptr);
+    }
     
     const size_t numParsedBytes = http_parser_execute(&c->httpParser,
                                                       &c->httpParserSettings,
@@ -51,15 +64,23 @@ static int on_message_complete(http_parser* p)
 {
     skRequest* c = (skRequest*)p->data;
     c->response.bodySize = c->response.size - c->response.bodyStart;
+    
+    if (c->log)
+    {
+        printf("skicka: received response\n%s\n", c->response.bytes);
+    }
+    
     //printf("-----------ON MESSAGE COMPLETE---------\n");
     return 0;
 }
 
 static int on_headers_complete(http_parser* p)
 {
+    
     skRequest* c = (skRequest*)p->data;
     c->response.httpStatusCode = p->status_code;
     c->response.bodyStart = p->nread;
+    
     //printf("----------ON HEADERS COMPLETE----------\n");
     return 0;
 }
@@ -204,8 +225,11 @@ void skRequest_send(skRequest* request, int async)
     
     curl_easy_setopt(request->curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(request->curl, CURLOPT_WRITEHEADER, request);
-    curl_easy_setopt(request->curl, CURLOPT_WRITEFUNCTION, readCallback);
+    curl_easy_setopt(request->curl, CURLOPT_WRITEFUNCTION, responseBytesReceivedCallback);
     curl_easy_setopt(request->curl, CURLOPT_WRITEDATA, request);
+    
+    //curl_easy_setopt(request->curl, CURLOPT_READFUNCTION, requestBytesSentCallback);
+    //curl_easy_setopt(request->curl, CURLOPT_READDATA, request);
     
     const char* requestBody = skMutableString_getString(&request->requestBody);
     
