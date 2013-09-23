@@ -90,6 +90,8 @@ extern "C"
         skMutableString requestBody;
         /** */
         void* userData[SK_REQUEST_NUM_USER_DATA_ENTRIES];
+        /** General purpose custom user flags*/
+        int userFlags;
         /** */
         skResponseCallback responseCallback;
         /** */
@@ -152,6 +154,11 @@ extern "C"
      * to poll for request completion.
      */
     void skRequest_send(skRequest* request, int async);
+    
+    /**
+     *
+     */
+    void skRequest_resend(skRequest* request, int async);
     
     /**
      * 

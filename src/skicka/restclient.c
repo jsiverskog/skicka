@@ -268,7 +268,7 @@ void skRESTClient_waitForAllRequestsToFinish(skRESTClient* client)
         thrd_join(r->thread, &res);
     }
  
-    //do a poll fire notifications about finished requests
+    //do a poll to fire notifications about finished requests
     skRESTClient_poll(client);
 }
 

@@ -295,7 +295,7 @@ void skRequest_send(skRequest* request, int async)
     
     if (request->log)
     {
-            curl_easy_setopt(request->curl, CURLOPT_VERBOSE, 1L);
+        curl_easy_setopt(request->curl, CURLOPT_VERBOSE, 1L);
         curl_easy_setopt(request->curl, CURLOPT_DEBUGFUNCTION, my_trace);
     }
     
@@ -320,7 +320,16 @@ void skRequest_send(skRequest* request, int async)
         curl_easy_setopt(request->curl, CURLOPT_CUSTOMREQUEST, "PUT");
     }
     
+    skRequest_resend(request, async);
     
+}
+
+void skRequest_resend(skRequest* request, int async)
+{
+    if (request->isRunning)
+    {
+        return;
+    }
     
     if (async)
     {
