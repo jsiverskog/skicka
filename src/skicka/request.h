@@ -15,7 +15,7 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-#define SK_REQUEST_NUM_USER_DATA_ENTRIES 4
+#define SK_REQUEST_NUM_USER_DATA_ENTRIES 8
     
     typedef void CURL;
     struct curl_slist;
@@ -62,7 +62,7 @@ extern "C"
      */
     typedef struct skRequest
     {
-        /** */
+        /** Set to a non-zero value for verbose logging. */
         int log;
         /** */
         skHTTPMethod method;
@@ -81,17 +81,17 @@ extern "C"
         /** */
         thrd_t thread;
         /** */
-        http_parser_settings httpParserSettings;
-        /** */
-        http_parser httpParser;
-        /** */
-        skResponse response;
-        /** */
         skMutableString requestBody;
         /** */
         void* userData[SK_REQUEST_NUM_USER_DATA_ENTRIES];
         /** General purpose custom user flags*/
         int userFlags;
+        /** */
+        http_parser_settings httpParserSettings;
+        /** */
+        http_parser httpParser;
+        /** */
+        skResponse response;
         /** */
         skResponseCallback responseCallback;
         /** */

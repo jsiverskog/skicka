@@ -279,8 +279,6 @@ void skRequest_send(skRequest* request, int async)
         return;
     }
     
-    request->isRunning = 1;
-    
     request->state = SK_IN_PROGRESS;
     
     if (request->headerFieldList)
@@ -330,6 +328,11 @@ void skRequest_resend(skRequest* request, int async)
     {
         return;
     }
+    
+    skResponse_deinit(&request->response);
+    http_parser_init(&request->httpParser, HTTP_RESPONSE);
+    
+    request->isRunning = 1;
     
     if (async)
     {

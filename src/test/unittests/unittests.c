@@ -19,6 +19,7 @@ int main(int argc, const char * argv[])
     
     sput_enter_suite("Synchronous request tests");
     sput_run_test(testSuccessfulGET);
+    sput_run_test(testSuccessfulGETResend);
     sput_run_test(testFailedGET);
     sput_leave_suite();
     

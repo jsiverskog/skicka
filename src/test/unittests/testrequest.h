@@ -46,8 +46,42 @@ static void testSuccessfulGET()
     
     skRequest_send(&r, 0);
     const skResponse* resp = &r.response;
+    sput_fail_unless(resp->bodySize > 0, "response body of GET to www.example.com should have more than zero bytes");
     sput_fail_unless(r.errorCode == SK_NO_ERROR, "Successful request should not have an error code set.");
     sput_fail_unless(resp->httpStatusCode == 200, "Wrong response status code");
+    sput_fail_unless((flags & ERROR_CALLBACK_CALLED) == 0,
+                     "Successful request should not invoke error callback.");
+    sput_fail_unless((flags & RESPONSE_CALLBACK_CALLED) != 0,
+                     "Successful request should invoke response callback.");
+    
+    skRequest_deinit(&r);
+}
+
+static void testSuccessfulGETResend()
+{
+    skRequest r;
+    skRequest_init(&r);
+    skRequest_setURL(&r, "http://www.example.com");
+    
+    int flags = 0;
+    r.userData[0] = &flags;
+    r.responseCallback = responseCallback;
+    r.errorCallback = errorCallback;
+    
+    skRequest_send(&r, 0);
+    const skResponse* resp = &r.response;
+    sput_fail_unless(r.errorCode == SK_NO_ERROR, "Successful request should not have an error code set.");
+    sput_fail_unless(resp->httpStatusCode == 200, "Wrong response status code");
+    sput_fail_unless((flags & ERROR_CALLBACK_CALLED) == 0,
+                     "Successful request should not invoke error callback.");
+    sput_fail_unless((flags & RESPONSE_CALLBACK_CALLED) != 0,
+                     "Successful request should invoke response callback.");
+    
+    r.userData[0] = &flags;
+    skRequest_resend(&r, 0);
+    const skResponse* resendResp = &r.response;
+    sput_fail_unless(r.errorCode == SK_NO_ERROR, "Successful request should not have an error code set.");
+    sput_fail_unless(resendResp->httpStatusCode == 200, "Wrong response status code");
     sput_fail_unless((flags & ERROR_CALLBACK_CALLED) == 0,
                      "Successful request should not invoke error callback.");
     sput_fail_unless((flags & RESPONSE_CALLBACK_CALLED) != 0,

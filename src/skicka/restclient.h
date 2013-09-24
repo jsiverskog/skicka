@@ -46,6 +46,8 @@ extern "C"
         skResponseCallback rawResponseCallback;
         /** Gets invoked if the request succeeds and \c skResponseFormat is \c SK_FORMAT_JSON. */
         skJSONResponseCallback jsonResponseCallback;
+        /** */
+        int donNotReturnToPool;
     } skRequestPoolEntry;
     
     /**

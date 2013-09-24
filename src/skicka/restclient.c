@@ -38,7 +38,10 @@ static void onRequestFinished(skRESTClient* client, skRequestPoolEntry* rpe)
         r->errorCallback(r, r->errorCode);
     }
     
-    skRequest_deinit(r);
+    if (!rpe->donNotReturnToPool)
+    {
+        skRequest_deinit(r);
+    }
 }
 
 
@@ -256,20 +259,26 @@ void skRESTClient_cancelAllRequests(skRESTClient* client, int waitUntilCancelled
 
 void skRESTClient_waitForAllRequestsToFinish(skRESTClient* client)
 {
-    for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
+    /*This do while statement allows requests to be sent in the
+     callbacks invoked by skRESTClient_poll*/
+    do
     {
-        skRequest* r = &client->requestPool[i].request;
-        if (r == 0)
+        for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
         {
-            continue;
+            skRequest* r = &client->requestPool[i].request;
+            if (r == 0)
+            {
+                continue;
+            }
+            
+            int res = 0;
+            thrd_join(r->thread, &res);
         }
         
-        int res = 0;
-        thrd_join(r->thread, &res);
+        //do a poll to fire notifications about finished requests
+        skRESTClient_poll(client);
     }
- 
-    //do a poll to fire notifications about finished requests
-    skRESTClient_poll(client);
+    while (skRESTClient_getNumActiveRequests(client) > 0);
 }
 
 int skRESTClient_getNumActiveRequests(skRESTClient* client)
