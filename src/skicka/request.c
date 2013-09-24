@@ -159,6 +159,7 @@ static int requestThreadEntryPoint(void *userPtr)
     
     skRequest* request = (skRequest*)userPtr;
     assert(request->isRunning);
+    assert(request->curl);
     
     CURLcode res = curl_easy_perform(request->curl);
     
@@ -237,7 +238,9 @@ void skRequest_deinit(skRequest* request)
 
 void skRequest_setURL(skRequest* request, const char* url)
 {
-    curl_easy_setopt(request->curl, CURLOPT_URL, url);
+    skMutableString_deinit(&request->url);
+    skMutableString_append(&request->url, url);
+    
 }
 
 void skRequest_setMethod(skRequest* request, skHTTPMethod method)
@@ -259,15 +262,65 @@ void skRequest_appendToBody(skRequest* request, const char* string, int urlEncod
     }
 }
 
-void skRequest_addHeaderField(skRequest* request, const char* name, const char* value)
+void skRequest_setHeaderField(skRequest* request, const char* name, const char* value)
 {
+    //replace the field, if it exists.
     skMutableString s;
     skMutableString_init(&s);
     skMutableString_append(&s, name);
     skMutableString_append(&s, ": ");
+    
+    struct curl_slist* existingItem = NULL;
+    {
+        struct curl_slist* curr = request->headerFieldList;
+        while (curr)
+        {
+            size_t lk = strlen(skMutableString_getString(&s));
+            size_t ld = strlen(curr->data);
+            
+            const int exists = ld < lk ? 0 : strncmp(curr->data, skMutableString_getString(&s), lk) == 0;
+            if (exists)
+            {
+                existingItem = curr;
+                break;
+            }
+            
+            curr = curr->next;
+        }
+    }
+    
     skMutableString_append(&s, value);
     
-    request->headerFieldList = curl_slist_append(request->headerFieldList, skMutableString_getString(&s));
+    
+    if (existingItem)
+    {
+        struct curl_slist* newList = NULL;
+        struct curl_slist* curr = request->headerFieldList;
+        while (curr)
+        {
+            if (curr == existingItem)
+            {
+                newList = curl_slist_append(newList,
+                                            skMutableString_getString(&s));
+            }
+            else
+            {
+                newList = curl_slist_append(newList,
+                                            curr->data);
+            }
+            
+            curr = curr->next;
+        }
+        
+        
+        curl_slist_free_all(request->headerFieldList);
+        request->headerFieldList = newList;
+    }
+    else
+    {
+        request->headerFieldList = curl_slist_append(request->headerFieldList,
+                                                     skMutableString_getString(&s));
+    }
     
     skMutableString_deinit(&s);
 }
@@ -318,16 +371,7 @@ void skRequest_send(skRequest* request, int async)
         curl_easy_setopt(request->curl, CURLOPT_CUSTOMREQUEST, "PUT");
     }
     
-    skRequest_resend(request, async);
-    
-}
-
-void skRequest_resend(skRequest* request, int async)
-{
-    if (request->isRunning)
-    {
-        return;
-    }
+    curl_easy_setopt(request->curl, CURLOPT_URL, skMutableString_getString(&request->url));
     
     skResponse_deinit(&request->response);
     http_parser_init(&request->httpParser, HTTP_RESPONSE);

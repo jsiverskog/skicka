@@ -10,27 +10,16 @@
 static void onRequestFinished(skRESTClient* client, skRequestPoolEntry* rpe)
 {
     skRequest* r = &rpe->request;
+    
+    r->isRunning = 0;
+    
     if (r->state == SK_SUCCEEDED)
     {
         r->response.body = &r->response.bytes[r->response.bodyStart];
         
-        if (client->debugResponseCallback)
+        if (r->responseCallback)
         {
-            client->debugResponseCallback(r, &r->response);
-        }
-        
-        if (rpe->expectedResponseFormat == SK_FORMAT_JSON &&
-            rpe->jsonResponseCallback)
-        {
-            json_error_t error;
-            json_t* root = json_loads(r->response.body, 0, &error);
-            rpe->jsonResponseCallback(r, root);
-            json_decref(root);
-        }
-        else if (rpe->rawResponseCallback)
-        {
-            //raw
-            rpe->rawResponseCallback(r, &r->response);
+            r->responseCallback(r, &r->response);
         }
     }
     else if (r->errorCallback)
@@ -94,7 +83,8 @@ skRequest* skRESTClient_getRequestFromPool(skRESTClient* client)
     int freeRequestSlot = -1;
     for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
     {
-        if (!client->requestPool[i].request.isRunning)
+        if (!client->requestPool[i].request.isRunning &&
+            !client->requestPool[i].donNotReturnToPool)
         {
             freeRequestSlot = i;
             break;
@@ -113,13 +103,32 @@ skRequest* skRESTClient_getRequestFromPool(skRESTClient* client)
     return r;
 }
 
-static skError skRESTClient_sendRequestPrivate(skRESTClient* client,
-                                               skRequest* request,
-                                               const char* path,
-                                               skResponseCallback responseCallback,
-                                               skJSONResponseCallback jsonResponseCallback,
-                                               skErrorCallback errorCallback,
-                                               int async)
+skError skRESTClient_setRequestRecyclable(skRESTClient* client, skRequest* r, int isRecyclable)
+{
+    skRequestPoolEntry* rpe = NULL;
+    for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
+    {
+        if (&client->requestPool[i].request == r)
+        {
+            rpe = &client->requestPool[i];
+            break;
+        }
+    }
+    
+    if (!rpe)
+    {
+        return SK_INVALID_PARAMETER;
+    }
+    
+    rpe->donNotReturnToPool = !isRecyclable;
+    
+    return SK_NO_ERROR;
+}
+
+skError skRESTClient_sendRequest(skRESTClient* client,
+                                 skRequest* request,
+                                 const char* path,
+                                 int async)
 {
     if (!request)
     {
@@ -142,26 +151,19 @@ static skError skRESTClient_sendRequestPrivate(skRESTClient* client,
     }
     
     //construct request URL
-    const long pathLength = strlen(path);
-    
+    long pathLength = 0;
     int pathStart = 0;
-    if (pathLength > 0)
+    if (path)
     {
-        if (path[0] == '/')
+        pathLength = strlen(path);
+        
+        if (pathLength > 0)
         {
-            pathStart = 1;
+            if (path[0] == '/')
+            {
+                pathStart = 1;
+            }
         }
-    }
-    
-    if (responseCallback)
-    {
-        client->requestPool[poolIndex].expectedResponseFormat = SK_FORMAT_RAW;
-        client->requestPool[poolIndex].rawResponseCallback = responseCallback;
-    }
-    else
-    {
-        client->requestPool[poolIndex].expectedResponseFormat = SK_FORMAT_JSON;
-        client->requestPool[poolIndex].jsonResponseCallback = jsonResponseCallback;
     }
     
     skMutableString url;
@@ -173,49 +175,18 @@ static skError skRESTClient_sendRequestPrivate(skRESTClient* client,
         skMutableString_append(&url, &path[pathStart]);
     }
     
-    skRequest_setURL(request, skMutableString_getString(&url));
+    if (path)
+    {
+        skRequest_setURL(request, skMutableString_getString(&url));
+    }
     
     skMutableString_deinit(&url);
-    
-    request->errorCallback = errorCallback;
     
     skRequest_send(request, async);
     
     return SK_NO_ERROR;
 }
 
-
-skError skRESTClient_sendRequestWithJSONResponse(skRESTClient* client,
-                                                 skRequest* request,
-                                                 const char* path,
-                                                 skJSONResponseCallback jsonResponseCallback,
-                                                 skErrorCallback errorCallback,
-                                                 int async)
-{
-    return skRESTClient_sendRequestPrivate(client,
-                                           request,
-                                           path,
-                                           NULL,
-                                           jsonResponseCallback,
-                                           errorCallback,
-                                           async);
-}
-
-skError skRESTClient_sendRequest(skRESTClient* client,
-                                 skRequest* request,
-                                 const char* path,
-                                 skResponseCallback responseCallback,
-                                 skErrorCallback errorCallback,
-                                 int async)
-{
-    return skRESTClient_sendRequestPrivate(client,
-                                           request,
-                                           path,
-                                           responseCallback,
-                                           NULL,
-                                           errorCallback,
-                                           async);
-}
 
 void skRESTClient_poll(skRESTClient* client)
 {

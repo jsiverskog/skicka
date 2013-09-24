@@ -3,7 +3,6 @@
 
 #include "../extern/tinycthread/tinycthread.h"
 #include "../extern/http_parser/http_parser.h"
-#include "../extern/jansson/jansson.h"
 
 #include "errorcodes.h"
 #include "response.h"
@@ -19,33 +18,12 @@ extern "C"
 #define SK_MAX_NUM_SIMULTANEOUS_REQUESTS 5
     
     /**
-     *
-     */
-    typedef enum skResponseFormat
-    {
-        SK_FORMAT_RAW = 0,
-        SK_FORMAT_JSON
-    } skResponseFormat;
-    
-    /**
-     * Response callback. Arguments are only valid until this function returns. 
-     * Deep copy any data that should exist past the call to this function.
-     */
-    typedef void (*skJSONResponseCallback)(skRequest* request, json_t* response);
-    
-    /**
      * An entry in a pool of reusable requests.
      */
     typedef struct skRequestPoolEntry
     {
         /** The request. */
         struct skRequest request;
-        /** The expected response format */
-        skResponseFormat expectedResponseFormat;
-        /** Gets invoked if the request succeeds and \c skResponseFormat is \c SK_FORMAT_RAW. */
-        skResponseCallback rawResponseCallback;
-        /** Gets invoked if the request succeeds and \c skResponseFormat is \c SK_FORMAT_JSON. */
-        skJSONResponseCallback jsonResponseCallback;
         /** */
         int donNotReturnToPool;
     } skRequestPoolEntry;
@@ -59,8 +37,6 @@ extern "C"
         skRequestPoolEntry requestPool[SK_MAX_NUM_SIMULTANEOUS_REQUESTS];
         /** The base URL, always with a trailing '/'.*/
         char* baseURL;
-        /** */
-        skResponseCallback debugResponseCallback;
 
     } skRESTClient;
 
@@ -85,25 +61,20 @@ extern "C"
     skRequest* skRESTClient_getRequestFromPool(skRESTClient* client);
     
     /**
-     * 
-     * @param request A request retreived using \c skRESTClient_getRequestFromPool.
-     */
-    skError skRESTClient_sendRequestWithJSONResponse(skRESTClient* client,
-                                                     skRequest* request,
-                                                     const char* path,
-                                                     skJSONResponseCallback jsonResponseCallback,
-                                                     skErrorCallback errorCallback,
-                                                     int async);
-    
-    /**
      *
+     */
+    skError skRESTClient_setRequestRecyclable(skRESTClient* client, skRequest* r, int isRecyclable);
+
+    /**
+     * Invokes \c responseCallback and \c errorCallback of \c request on completion.
+     * @param client
      * @param request A request retreived using \c skRESTClient_getRequestFromPool.
+     * @param path The path to the REST resource. If NULL, the currently set URL of 
+     * \c request will be used.
      */
     skError skRESTClient_sendRequest(skRESTClient* client,
                                      skRequest* request,
                                      const char* path,
-                                     skResponseCallback responseCallback,
-                                     skErrorCallback errorCallback,
                                      int async);
     
     /**

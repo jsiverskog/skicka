@@ -78,7 +78,7 @@ static void testSuccessfulGETResend()
                      "Successful request should invoke response callback.");
     
     r.userData[0] = &flags;
-    skRequest_resend(&r, 0);
+    skRequest_send(&r, 0);
     const skResponse* resendResp = &r.response;
     sput_fail_unless(r.errorCode == SK_NO_ERROR, "Successful request should not have an error code set.");
     sput_fail_unless(resendResp->httpStatusCode == 200, "Wrong response status code");

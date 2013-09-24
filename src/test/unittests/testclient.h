@@ -4,6 +4,69 @@
 #include "sput.h"
 #include "../../skicka/restclient.h"
 
+
+static void resendErrorCallback(struct skRequest* request, skError errorCode)
+{
+    sput_fail_if(1, "Error callback should not be called during send from callback test");
+}
+
+static void resendResponseCallback3(struct skRequest* request, skResponse* response)
+{
+    //printf("final response\n");
+    sput_fail_unless(response->httpStatusCode < 300 &&
+                     response->httpStatusCode >= 200,
+                     "Send from callback should give a 2xx response status code");
+}
+
+static void resendResponseCallback2(struct skRequest* request, skResponse* response)
+{
+    sput_fail_unless(response->httpStatusCode < 300 &&
+                     response->httpStatusCode >= 200,
+                     "Send from callback should give a 2xx response status code");
+    //printf("resending 2\n");
+    skRESTClient* c = (skRESTClient*)request->userData[0];
+    skRequest* r = skRESTClient_getRequestFromPool(c);
+    r->userData[0] = c;
+    r->responseCallback = resendResponseCallback3;
+    r->errorCallback = resendErrorCallback;
+    skRESTClient_sendRequest(c, r, "/", 1);
+}
+
+static void resendResponseCallback1(struct skRequest* request, skResponse* response)
+{
+    sput_fail_unless(response->httpStatusCode < 300 &&
+                     response->httpStatusCode >= 200,
+                     "Send from callback should give a 2xx response status code");
+    //printf("resending 1\n");
+    skRESTClient* c = (skRESTClient*)request->userData[0];
+    skRequest* r = skRESTClient_getRequestFromPool(c);
+    r->userData[0] = c;
+    r->responseCallback = resendResponseCallback2;
+    r->errorCallback = resendErrorCallback;
+    skRESTClient_sendRequest(c, r, "/", 1);
+}
+
+static void testClientResendRequestFromCallback()
+{
+    //test sending requests from within response callbacks
+    skRESTClient c;
+    skRESTClient_init(&c, "http://www.example.com");
+    
+    skRequest* r = skRESTClient_getRequestFromPool(&c);
+    r->userData[0] = &c;
+    r->responseCallback = resendResponseCallback1;
+    r->errorCallback = resendErrorCallback;
+    skRESTClient_sendRequest(&c, r, "/", 1);
+    
+    r = skRESTClient_getRequestFromPool(&c);
+    r->userData[0] = &c;
+    skRESTClient_sendRequest(&c, r, "/", 1);
+    
+    skRESTClient_waitForAllRequestsToFinish(&c);
+    
+    skRESTClient_deinit(&c);
+}
+
 static void testClientRequestCount()
 {
     skRESTClient c;
@@ -12,7 +75,7 @@ static void testClientRequestCount()
     for (int i = 0; i < 5; i++)
     {
         skRequest* r = skRESTClient_getRequestFromPool(&c);
-        skRESTClient_sendRequest(&c, r, "/", NULL, NULL, 1);
+        skRESTClient_sendRequest(&c, r, "/", 1);
         const int numActiveRequests = skRESTClient_getNumActiveRequests(&c);
         sput_fail_unless(numActiveRequests == i + 1, "Active request count check");
     }
@@ -31,7 +94,7 @@ static void testClientRequestPoolSize()
     do
     {
         r = skRESTClient_getRequestFromPool(&c);
-        skRESTClient_sendRequest(&c, r, "/", NULL, NULL, 1);
+        skRESTClient_sendRequest(&c, r, "/", 1);
     }
     while (r != NULL);
     

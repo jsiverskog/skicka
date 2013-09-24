@@ -83,6 +83,8 @@ extern "C"
         /** */
         skMutableString requestBody;
         /** */
+        skMutableString url;
+        /** */
         void* userData[SK_REQUEST_NUM_USER_DATA_ENTRIES];
         /** General purpose custom user flags*/
         int userFlags;
@@ -95,9 +97,10 @@ extern "C"
         /** */
         skResponseCallback responseCallback;
         /** */
-        skError errorCode;
-        /** */
         skErrorCallback errorCallback;
+        /** */
+        skError errorCode;
+
     } skRequest;
         
     /**
@@ -144,7 +147,7 @@ extern "C"
      * @param name The name of the header field.
      * @param value The value of the header field.
      */
-    void skRequest_addHeaderField(skRequest* request, const char* name, const char* value);
+    void skRequest_setHeaderField(skRequest* request, const char* name, const char* value);
     
     /**
      * Sends an HTTP request.
@@ -154,12 +157,7 @@ extern "C"
      * to poll for request completion.
      */
     void skRequest_send(skRequest* request, int async);
-    
-    /**
-     *
-     */
-    void skRequest_resend(skRequest* request, int async);
-    
+
     /**
      * 
      */

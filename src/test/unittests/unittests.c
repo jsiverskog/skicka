@@ -30,6 +30,7 @@ int main(int argc, const char * argv[])
     sput_leave_suite();
     
     sput_enter_suite("REST Client tests");
+    sput_run_test(testClientResendRequestFromCallback);
     sput_run_test(testClientRequestCount);
     sput_run_test(testClientRequestPoolSize);
     sput_leave_suite();
