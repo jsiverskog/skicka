@@ -27,7 +27,7 @@ static void onRequestFinished(skRESTClient* client, skRequestPoolEntry* rpe)
         r->errorCallback(r, r->errorCode);
     }
     
-    if (!rpe->donNotReturnToPool)
+    if (!rpe->manualDeinit)
     {
         skRequest_deinit(r);
     }
@@ -84,7 +84,7 @@ skRequest* skRESTClient_getRequestFromPool(skRESTClient* client)
     for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
     {
         if (!client->requestPool[i].request.isRunning &&
-            !client->requestPool[i].donNotReturnToPool)
+            !client->requestPool[i].manualDeinit)
         {
             freeRequestSlot = i;
             break;
@@ -103,7 +103,7 @@ skRequest* skRESTClient_getRequestFromPool(skRESTClient* client)
     return r;
 }
 
-skError skRESTClient_setRequestRecyclable(skRESTClient* client, skRequest* r, int isRecyclable)
+skError skRESTClient_setRequestManualDeinit(skRESTClient* client, skRequest* r, int manualDeinit)
 {
     skRequestPoolEntry* rpe = NULL;
     for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
@@ -120,7 +120,7 @@ skError skRESTClient_setRequestRecyclable(skRESTClient* client, skRequest* r, in
         return SK_INVALID_PARAMETER;
     }
     
-    rpe->donNotReturnToPool = !isRecyclable;
+    rpe->manualDeinit = manualDeinit;
     
     return SK_NO_ERROR;
 }
@@ -259,6 +259,7 @@ int skRESTClient_getNumActiveRequests(skRESTClient* client)
     for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
     {
         skRequest* r = &client->requestPool[i].request;
+        
         if (r == 0)
         {
             continue;

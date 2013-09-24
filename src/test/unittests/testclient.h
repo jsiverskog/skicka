@@ -12,7 +12,7 @@ static void resendErrorCallback(struct skRequest* request, skError errorCode)
 
 static void resendResponseCallback3(struct skRequest* request, skResponse* response)
 {
-    //printf("final response\n");
+    printf("final response\n");
     sput_fail_unless(response->httpStatusCode < 300 &&
                      response->httpStatusCode >= 200,
                      "Send from callback should give a 2xx response status code");
@@ -23,9 +23,11 @@ static void resendResponseCallback2(struct skRequest* request, skResponse* respo
     sput_fail_unless(response->httpStatusCode < 300 &&
                      response->httpStatusCode >= 200,
                      "Send from callback should give a 2xx response status code");
-    //printf("resending 2\n");
+    printf("resending 2\n");
     skRESTClient* c = (skRESTClient*)request->userData[0];
+    skRESTClient_setRequestManualDeinit(c, request, 1);
     skRequest* r = skRESTClient_getRequestFromPool(c);
+    skRESTClient_setRequestManualDeinit(c, request, 0);
     r->userData[0] = c;
     r->responseCallback = resendResponseCallback3;
     r->errorCallback = resendErrorCallback;
@@ -37,9 +39,11 @@ static void resendResponseCallback1(struct skRequest* request, skResponse* respo
     sput_fail_unless(response->httpStatusCode < 300 &&
                      response->httpStatusCode >= 200,
                      "Send from callback should give a 2xx response status code");
-    //printf("resending 1\n");
+    printf("resending 1\n");
     skRESTClient* c = (skRESTClient*)request->userData[0];
+    skRESTClient_setRequestManualDeinit(c, request, 1);
     skRequest* r = skRESTClient_getRequestFromPool(c);
+    skRESTClient_setRequestManualDeinit(c, request, 0);
     r->userData[0] = c;
     r->responseCallback = resendResponseCallback2;
     r->errorCallback = resendErrorCallback;
@@ -63,6 +67,9 @@ static void testClientResendRequestFromCallback()
     skRESTClient_sendRequest(&c, r, "/", 1);
     
     skRESTClient_waitForAllRequestsToFinish(&c);
+    
+    sput_fail_unless(skRESTClient_getNumActiveRequests(&c) == 0,
+                     "There should be 0 acive requests after call to skRESTClient_waitForAllRequestsToFinish");
     
     skRESTClient_deinit(&c);
 }

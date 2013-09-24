@@ -25,7 +25,7 @@ extern "C"
         /** The request. */
         struct skRequest request;
         /** */
-        int donNotReturnToPool;
+        int manualDeinit;
     } skRequestPoolEntry;
     
     /**
@@ -63,7 +63,7 @@ extern "C"
     /**
      *
      */
-    skError skRESTClient_setRequestRecyclable(skRESTClient* client, skRequest* r, int isRecyclable);
+    skError skRESTClient_setRequestManualDeinit(skRESTClient* client, skRequest* r, int manualDeinit);
 
     /**
      * Invokes \c responseCallback and \c errorCallback of \c request on completion.
