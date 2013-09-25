@@ -15,7 +15,7 @@ extern "C"
 {
 #endif /* __cplusplus */
     
-#define SK_MAX_NUM_SIMULTANEOUS_REQUESTS 5
+#define SK_MAX_NUM_SIMULTANEOUS_REQUESTS 25
     
     /**
      * An entry in a pool of reusable requests.
