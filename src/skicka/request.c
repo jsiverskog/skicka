@@ -190,6 +190,8 @@ static int requestThreadEntryPoint(void *userPtr)
         request->response.bytes = realloc(request->response.bytes, request->response.size + 1);
         request->response.bytes[request->response.size] = '\0';
         request->response.body = &request->response.bytes[request->response.bodyStart];
+        
+        request->response.bodySize = request->response.size - request->response.bodyStart;
     }
     
     mtx_lock(&request->mutex);
