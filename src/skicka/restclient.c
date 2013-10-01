@@ -35,7 +35,8 @@ static void onRequestFinished(skRESTClient* client, skRequestPoolEntry* rpe)
 
 
 skError skRESTClient_init(skRESTClient* client,
-                          const char* baseURL)
+                          const char* baseURL,
+                          int requestPoolSize)
 {
     //store the base URL and append a trailing '/' if missing
     {
@@ -50,6 +51,19 @@ skError skRESTClient_init(skRESTClient* client,
             client->baseURL[baseUrlLength] = '/';
             client->baseURL[baseUrlLength + 1] = '\0';
         }
+    }
+    
+    //create request pool
+    {
+        if (requestPoolSize <= 0)
+        {
+            return SK_INVALID_PARAMETER;
+        }
+        
+        client->requestPoolSize = requestPoolSize;
+        const int requestPoolByteSize = client->requestPoolSize * sizeof(skRequestPoolEntry);
+        client->requestPool = (skRequestPoolEntry*)malloc(requestPoolByteSize);
+        memset(client->requestPool, 0, requestPoolByteSize);
     }
     
     //init CURL
@@ -75,13 +89,16 @@ void skRESTClient_deinit(skRESTClient* client)
         free(client->baseURL);
     }
     
+    //free request pool
+    free(client->requestPool);
+    
     memset(client, 0, sizeof(skRESTClient));
 }
 
 skRequest* skRESTClient_getRequestFromPool(skRESTClient* client)
 {
     int freeRequestSlot = -1;
-    for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
+    for (int i = 0; i < client->requestPoolSize; i++)
     {
         if (!client->requestPool[i].request.isRunning &&
             !client->requestPool[i].manualDeinit)
@@ -106,7 +123,7 @@ skRequest* skRESTClient_getRequestFromPool(skRESTClient* client)
 skError skRESTClient_setRequestManualDeinit(skRESTClient* client, skRequest* r, int manualDeinit)
 {
     skRequestPoolEntry* rpe = NULL;
-    for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
+    for (int i = 0; i < client->requestPoolSize; i++)
     {
         if (&client->requestPool[i].request == r)
         {
@@ -136,7 +153,7 @@ skError skRESTClient_sendRequest(skRESTClient* client,
     }
     
     int poolIndex = -1;
-    for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
+    for (int i = 0; i < client->requestPoolSize; i++)
     {
         if (&client->requestPool[i].request == request)
         {
@@ -190,7 +207,7 @@ skError skRESTClient_sendRequest(skRESTClient* client,
 
 void skRESTClient_poll(skRESTClient* client)
 {
-    for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
+    for (int i = 0; i < client->requestPoolSize; i++)
     {
         skRequest* r = &client->requestPool[i].request;
         if (r->isRunning == 0)
@@ -211,7 +228,7 @@ void skRESTClient_poll(skRESTClient* client)
 
 void skRESTClient_cancelAllRequests(skRESTClient* client, int waitUntilCancelled)
 {
-    for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
+    for (int i = 0; i < client->requestPoolSize; i++)
     {
         skRequest* r = &client->requestPool[i].request;
         if (r == 0)
@@ -234,7 +251,7 @@ void skRESTClient_waitForAllRequestsToFinish(skRESTClient* client)
      callbacks invoked by skRESTClient_poll*/
     do
     {
-        for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
+        for (int i = 0; i < client->requestPoolSize; i++)
         {
             skRequest* r = &client->requestPool[i].request;
             if (r == 0)
@@ -256,7 +273,7 @@ int skRESTClient_getNumActiveRequests(skRESTClient* client)
 {
     int numActive = 0;
     
-    for (int i = 0; i < SK_MAX_NUM_SIMULTANEOUS_REQUESTS; i++)
+    for (int i = 0; i < client->requestPoolSize; i++)
     {
         skRequest* r = &client->requestPool[i].request;
         

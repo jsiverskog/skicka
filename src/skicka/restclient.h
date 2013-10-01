@@ -15,7 +15,7 @@ extern "C"
 {
 #endif /* __cplusplus */
     
-#define SK_MAX_NUM_SIMULTANEOUS_REQUESTS 25
+#define SK_DEFAULT_REQUEST_POOL_SIZE 25
     
     /**
      * An entry in a pool of reusable requests.
@@ -34,7 +34,9 @@ extern "C"
     typedef struct skRESTClient
     {
         /** A pool of reusable requests. */
-        skRequestPoolEntry requestPool[SK_MAX_NUM_SIMULTANEOUS_REQUESTS];
+        skRequestPoolEntry* requestPool;
+        /** */
+        int requestPoolSize;
         /** The base URL, always with a trailing '/'.*/
         char* baseURL;
 
@@ -44,7 +46,8 @@ extern "C"
      *
      */
     skError skRESTClient_init(skRESTClient* client,
-                              const char* baseURL);
+                              const char* baseURL,
+                              int requestPoolSize);
     
     /**
      *

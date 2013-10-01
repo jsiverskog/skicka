@@ -54,7 +54,7 @@ static void testClientResendRequestFromCallback()
 {
     //test sending requests from within response callbacks
     skRESTClient c;
-    skRESTClient_init(&c, "http://www.example.com");
+    skRESTClient_init(&c, "http://www.example.com", SK_DEFAULT_REQUEST_POOL_SIZE);
     
     skRequest* r = skRESTClient_getRequestFromPool(&c);
     r->userData[0] = &c;
@@ -77,7 +77,7 @@ static void testClientResendRequestFromCallback()
 static void testClientRequestCount()
 {
     skRESTClient c;
-    skRESTClient_init(&c, "http://www.example.com");
+    skRESTClient_init(&c, "http://www.example.com", SK_DEFAULT_REQUEST_POOL_SIZE);
     
     for (int i = 0; i < 5; i++)
     {
@@ -95,7 +95,7 @@ static void testClientRequestCount()
 static void testClientRequestPoolSize()
 {
     skRESTClient c;
-    skRESTClient_init(&c, "http://www.example.com");
+    skRESTClient_init(&c, "http://www.example.com", SK_DEFAULT_REQUEST_POOL_SIZE);
     
     skRequest* r = NULL;
     do

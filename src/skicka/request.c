@@ -158,6 +158,12 @@ static int requestThreadEntryPoint(void *userPtr)
     //printf("requestThreadEntryPoint, thread count %d\n", debugThreadCount);
     
     skRequest* request = (skRequest*)userPtr;
+    
+    if (request->requestThreadEntryCallback && request->async)
+    {
+        request->requestThreadEntryCallback(request);
+    }
+    
     assert(request->isRunning);
     assert(request->curl);
     
@@ -379,6 +385,7 @@ void skRequest_send(skRequest* request, int async)
     http_parser_init(&request->httpParser, HTTP_RESPONSE);
     
     request->isRunning = 1;
+    request->async = async;
     
     if (async)
     {

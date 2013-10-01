@@ -35,6 +35,12 @@ extern "C"
     typedef void (*skErrorCallback)(struct skRequest* request, skError errorCode);
     
     /**
+     * Called from the request thread as soon as it has been created (only if the request
+     * is run in asynchronous mode).
+     */
+    typedef void (*skRequestThreadEntryCallback)(struct skRequest* request);
+    
+    /**
      * Valid HTTP request states.
      */
     typedef enum skRequestState
@@ -69,6 +75,8 @@ extern "C"
         /** */
         int isRunning;
         /** */
+        int async;
+        /** */
         skRequestState state;
         /** */
         mtx_t mutex;
@@ -98,6 +106,8 @@ extern "C"
         skResponseCallback responseCallback;
         /** */
         skErrorCallback errorCallback;
+        /** */
+        skRequestThreadEntryCallback requestThreadEntryCallback;
         /** */
         skError errorCode;
 
