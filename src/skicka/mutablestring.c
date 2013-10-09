@@ -21,7 +21,7 @@ void skMutableString_deinit(skMutableString* ms)
 
 void skMutableString_append(skMutableString* ms, const char* toAppend)
 {
-    skMutableString_appendBytes(ms, toAppend, strlen(toAppend));
+    skMutableString_appendBytes(ms, toAppend, (int)strlen(toAppend));
 }
 
 void skMutableString_appendBytes(skMutableString* ms, const char* toAppend, int numBytes)
