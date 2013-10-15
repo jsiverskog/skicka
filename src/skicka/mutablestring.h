@@ -48,6 +48,11 @@ extern "C"
     /**
      *
      */
+    void skMutableString_appendInt(skMutableString* ms, int toAppend);
+    
+    /**
+     *
+     */
     void skMutableString_appendBytes(skMutableString* ms, const char* toAppend, int numBytes);
     
     /**

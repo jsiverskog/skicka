@@ -24,6 +24,13 @@ void skMutableString_append(skMutableString* ms, const char* toAppend)
     skMutableString_appendBytes(ms, toAppend, (int)strlen(toAppend));
 }
 
+void skMutableString_appendInt(skMutableString* ms, int toAppend)
+{
+    char temp[64];
+    sprintf(temp, "%d", toAppend);
+    skMutableString_append(ms, temp);
+}
+
 void skMutableString_appendBytes(skMutableString* ms, const char* toAppend, int numBytes)
 {
     if (!toAppend)
