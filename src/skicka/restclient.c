@@ -115,6 +115,7 @@ skRequest* skRESTClient_getRequestFromPool(skRESTClient* client)
     
     memset(&client->requestPool[freeRequestSlot], 0, sizeof(skRequestPoolEntry));
     skRequest* r = &client->requestPool[freeRequestSlot].request;
+    assert(r->isRunning == 0);
     skRequest_init(r);
     
     return r;

@@ -209,6 +209,8 @@ static int requestThreadEntryPoint(void *userPtr)
     return 0;
 }
 
+static int debugAllocationBalance = 0;
+
 void skRequest_init(skRequest* request)
 {
     memset(request, 0, sizeof(skRequest));
@@ -223,6 +225,13 @@ void skRequest_init(skRequest* request)
     request->httpParserSettings.on_message_complete = on_message_complete;
     http_parser_init(&request->httpParser, HTTP_RESPONSE);
     request->httpParser.data = request;
+    
+    debugAllocationBalance++;
+    if (debugAllocationBalance > 50)
+    {
+        int a = 0;
+    }
+    //printf("skRequest_init %p, debugAllocationBalance %d\n", request, debugAllocationBalance);
 }
 
 void skRequest_deinit(skRequest* request)
@@ -242,6 +251,9 @@ void skRequest_deinit(skRequest* request)
     skMutableString_deinit(&request->requestBody);
     
     memset(request, 0, sizeof(skRequest));
+    
+    debugAllocationBalance--;
+    //printf("skRequest_deinit %p, debugAllocationBalance %d\n", request, debugAllocationBalance);
 }
 
 void skRequest_setURL(skRequest* request, const char* url)
