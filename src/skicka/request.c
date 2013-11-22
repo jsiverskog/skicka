@@ -359,6 +359,7 @@ void skRequest_send(skRequest* request, int async)
         curl_easy_setopt(request->curl, CURLOPT_HTTPHEADER, request->headerFieldList);
     }
     
+    curl_easy_setopt(request->curl, CURLOPT_NOSIGNAL, 1L);
     curl_easy_setopt(request->curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(request->curl, CURLOPT_WRITEHEADER, request);
     curl_easy_setopt(request->curl, CURLOPT_WRITEFUNCTION, responseBytesReceivedCallback);
