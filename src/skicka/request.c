@@ -169,6 +169,8 @@ static int requestThreadEntryPoint(void *userPtr)
     
     CURLcode res = curl_easy_perform(request->curl);
     
+    printf("curl_easy_perform returned %d (%s)\n", res, curl_easy_strerror(res));
+    
     if(res == CURLE_OK)
     {
         http_parser_execute(&request->httpParser,
@@ -176,7 +178,7 @@ static int requestThreadEntryPoint(void *userPtr)
                             NULL,
                             0);
     }
-    
+
     skRequestState state = SK_SUCCEEDED;
     
     if (request->shouldCancel)
@@ -231,7 +233,7 @@ void skRequest_init(skRequest* request)
     {
         int a = 0;
     }
-    //printf("skRequest_init %p, debugAllocationBalance %d\n", request, debugAllocationBalance);
+    printf("skRequest_init %p, debugAllocationBalance %d\n", request, debugAllocationBalance);
 }
 
 void skRequest_deinit(skRequest* request)
@@ -253,7 +255,7 @@ void skRequest_deinit(skRequest* request)
     memset(request, 0, sizeof(skRequest));
     
     debugAllocationBalance--;
-    //printf("skRequest_deinit %p, debugAllocationBalance %d\n", request, debugAllocationBalance);
+    printf("skRequest_deinit %p, debugAllocationBalance %d\n", request, debugAllocationBalance);
 }
 
 void skRequest_setURL(skRequest* request, const char* url)
