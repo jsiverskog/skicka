@@ -17,6 +17,8 @@ extern "C"
 
 #define SK_REQUEST_NUM_USER_DATA_ENTRIES 8
     
+#define SK_REQUEST_CONNECT_TIMEOUT_MS 5000
+    
     typedef void CURL;
     struct curl_slist;
     struct skRequest;
