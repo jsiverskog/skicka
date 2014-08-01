@@ -403,7 +403,12 @@ void skRequest_send(skRequest* request, int async)
     
     if (async)
     {
-        thrd_create(&request->thread, requestThreadEntryPoint, request);
+        const int res = thrd_create(&request->thread, requestThreadEntryPoint, request);
+        if (res == thrd_success) {
+            thrd_detach(request->thread);
+        } else {
+            // TODO: handle this case
+        }
     }
     else
     {
